@@ -1,31 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lesson76_bloc_cubit/cubits/todo/todo_cubit.dart';
-import 'package:lesson76_bloc_cubit/examples/counter/counter_cubit.dart';
-import 'package:lesson76_bloc_cubit/ui/screens/todo_screen.dart';
+
+import 'package:lesson76_bloc_cubit/data/repositories/todos_repository.dart';
+import 'package:lesson76_bloc_cubit/logic/blocs/counter/counter_bloc.dart';
+import 'package:lesson76_bloc_cubit/logic/blocs/todo/todo_bloc.dart';
+import 'package:lesson76_bloc_cubit/services/todo_http_service.dart';
+
+import 'logic/cubits/all_cubits.dart';
+
+import 'core/app.dart';
 
 void main() {
-  runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
+  runApp(
+    MultiRepositoryProvider(
       providers: [
-        BlocProvider(create: (context) {
-          return CounterCubit();
-        }),
-        BlocProvider(create: (context) {
-          return TodoCubit();
-        }),
+        RepositoryProvider(
+          create: (context) {
+            return TodosRepository(TodoHttpService());
+          },
+        ),
+        RepositoryProvider(
+          create: (context) {
+            return MockTodoRepository();
+          },
+        ),
       ],
-      child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: TodoScreen(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) {
+            return CounterCubit();
+          }),
+          BlocProvider(create: (context) {
+            return TodoCubit(context.read<TodosRepository>());
+          }),
+          BlocProvider(create: (ctx) {
+            return CounterBloc();
+          }),
+          BlocProvider(create: (ctx) {
+            return TodoBloc(ctx.read<TodosRepository>());
+          }),
+        ],
+        child: const MainApp(),
       ),
-    );
-  }
+    ),
+  );
 }

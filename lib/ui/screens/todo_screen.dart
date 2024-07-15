@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lesson76_bloc_cubit/cubits/todo/todo_cubit.dart';
-import 'package:lesson76_bloc_cubit/cubits/todo/todo_state.dart';
+import 'package:lesson76_bloc_cubit/logic/blocs/counter/counter_bloc.dart';
+import 'package:lesson76_bloc_cubit/logic/blocs/todo/todo_bloc.dart';
+
+import '../../logic/cubits/all_cubits.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -22,16 +24,29 @@ class _TodoScreenState extends State<TodoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final counterBloc = context.watch<CounterBloc>();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Todo"),
+        title: Text(counterBloc.state.counter.toString()),
         actions: [
           IconButton(
             onPressed: () {
-              String title = "yangi Todo";
+              counterBloc.add(DecrementCounterEvent());
+              // String title = "yangi Todo";
+              // String id = UniqueKey().toString();
+
+              // context.read<TodoCubit>().addTodo(title, id);
+            },
+            icon: const Icon(Icons.remove),
+          ),
+          IconButton(
+            onPressed: () {
+              // counterBloc.add(IncrementCounterEvent());
+              String title = "Salom Todo";
               String id = UniqueKey().toString();
 
-              context.read<TodoCubit>().addTodo(title, id);
+              context.read<TodoBloc>().add(AddTodoEvent(title, false));
             },
             icon: const Icon(Icons.add),
           ),
@@ -39,7 +54,6 @@ class _TodoScreenState extends State<TodoScreen> {
       ),
       body: BlocBuilder<TodoCubit, TodoState>(
         builder: (context, state) {
-          print(state);
           if (state is InitialState) {
             return const Center(
               child: Text("Ma'lumot hali yuklanmadi"),

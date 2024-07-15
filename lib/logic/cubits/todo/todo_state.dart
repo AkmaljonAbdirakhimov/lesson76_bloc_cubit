@@ -3,7 +3,7 @@
 //! LoadedState - yuklanib bo'lgan holati
 //! ErrorState - xatolik holati
 
-import '../../data/models/todo.dart';
+part of 'todo_cubit.dart';
 
 sealed class TodoState {}
 

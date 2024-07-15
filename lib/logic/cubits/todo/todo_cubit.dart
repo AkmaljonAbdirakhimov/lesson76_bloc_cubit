@@ -1,9 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lesson76_bloc_cubit/cubits/todo/todo_state.dart';
-import 'package:lesson76_bloc_cubit/data/models/todo.dart';
+
+import '../../../data/models/todo.dart';
+import '../../../data/repositories/todos_repository.dart';
+
+part 'todo_state.dart';
 
 class TodoCubit extends Cubit<TodoState> {
-  TodoCubit() : super(InitialState());
+  TodoCubit(
+    this.interfaceTodoRepository,
+  ) : super(InitialState());
+  final InterfaceTodoRepository interfaceTodoRepository;
   List<Todo> todos = [];
 
   Future<void> getTodos() async {
@@ -31,8 +37,7 @@ class TodoCubit extends Cubit<TodoState> {
       }
 
       emit(LoadingState());
-      await Future.delayed(const Duration(seconds: 2));
-      // await todoHttpService.getTodos();
+      await interfaceTodoRepository.addTodo(title, false);
 
       todos.add(Todo(id: id, title: title));
       emit(LoadedState(todos));
